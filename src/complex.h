@@ -6,9 +6,14 @@ typedef struct {
 	double imag;
 } Complex;
 
+// Mathematical functions
 Complex c_add(Complex z1, Complex z2);
 Complex c_sub(Complex z1, Complex z2);
 Complex c_mul(Complex z1, Complex z2);
 Complex c_exp(Complex z1);
+
+// Utility functions
+Complex c_rep(double x);
+void c_print(Complex z1);
 
 #endif
