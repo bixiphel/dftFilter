@@ -30,6 +30,14 @@ Complex c_rep(double x) {
 	return z;	
 }
 
+double c_real(Complex z) {
+	return z.real;
+}
+
+double c_imag(Complex z) {
+	return z.imag;
+}
+
 void c_print(Complex z1) {
 	if(z1.imag > 0) {
 		printf("%f + %fi", z1.real, z1.imag);

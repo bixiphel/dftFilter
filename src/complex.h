@@ -14,6 +14,8 @@ Complex c_exp(Complex z1);
 
 // Utility functions
 Complex c_rep(double x);
+double c_real(Complex z);
+double c_imag(Complex z);
 void c_print(Complex z1);
 
 #endif
