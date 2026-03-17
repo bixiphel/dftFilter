@@ -23,7 +23,7 @@ int main() {
 			Complex transform = c_mul(e, c_rep(img.data[m]));
 			num = c_add(num, transform);
 		}
-		printf("X_%d = ", k);
+		printf("P(%d, 0) = ", k);
 		c_print(num);
 		printf("\n");
 	}
