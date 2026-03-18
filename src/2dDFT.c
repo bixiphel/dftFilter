@@ -4,11 +4,19 @@
 #include "complex.h"
 #include "pgm.h"
 
-int main() {
+int main(int argc, char** argv) {
+	if (argc != 4){
+    		printf("Usage: MyProgram <input_ppm> <output_ppm> <cutoff_frequency>\n");
+    		printf("       <input_ppm>: PGM file \n");
+    		printf("       <output_ppm>: PGM file \n");
+		printf("       <cutoff_frequency>: Low-Pass cutoff frequency \n");
+    		exit(16);
+  	}
+
 	PGMimage img;
 	const double PI = acos(-1.0f);
 
-	readPGM("Knee.pgm", &img);
+	readPGM(argv[1], &img);
 
 	// Resize image
 	PGMimage resized;
@@ -72,7 +80,7 @@ int main() {
 	}
 
 	/***** Ideal Low Pass Filtering *****/
-	double cutoff = 100.0f;		// Make this a user-defined parameter later
+	double cutoff = atoi(argv[3])*1.0f;		// Make this a user-defined parameter later
 	for(int v = 0; v < resized.height; v++) {
 		for(int u = 0; u < resized.width; u++) {
 			// Calculate the ideal function
@@ -142,7 +150,7 @@ int main() {
     	}
 
 	// Write to the output
-	writePGM("output.pgm", &img);	
+	writePGM(argv[2], &img);	
 
 	// Free memory and close resources
 	free(rData);
