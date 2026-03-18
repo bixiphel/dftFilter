@@ -51,10 +51,10 @@ int main() {
 		}
 	}
 
-	// Perform the DFT on all columns
-	double *output = malloc(sizeof(double)*resized.width*resized.height);
-	double max = 0.0f;
+	// Create another buffer to hold the results of the DFT
+	Complex *dft2 = malloc(sizeof(Complex) * resized.width * resized.height);
 
+	// Perform the DFT on all columns
 	for(int x = 0; x < resized.width; x++) {
 		for(int v = 0; v < resized.height; v++) {
 			Complex num = {0.0f, 0.0f};
@@ -67,30 +67,69 @@ int main() {
 				
 				num = c_add(num, c_mul(temp[y*resized.width + x], e));
 			}
-			output[v*resized.width + x] = c_mag(num);
-			
-			if(output[v*resized.width + x] >= max) {
-				max = output[v*resized.width + x];
-			}
+			dft2[v*resized.width + x] = num;
 		}
 	}
 
-	// Converts the resulting 2D DFT back into unsigned chars 
+	// Pointer similar to temp for the inverse transform's values
+	Complex *invTemp = malloc(sizeof(Complex)*resized.width*resized.height);
+
+	// IDFT on the columns 
+	for(int x = 0; x < resized.width; x++) {
+    		for(int y = 0; y < resized.height; y++) {
+        		Complex sum = {0.0, 0.0};
+        		for(int v = 0; v < resized.height; v++) {
+            			double exponent = 2.0 * PI * v * y / resized.height; 
+            			Complex i = {0, 1};
+            			Complex e = c_exp(c_mul(i, c_rep(exponent)));
+            			sum = c_add(sum, c_mul(dft2[v*resized.width + x], e));
+        		}
+        		invTemp[y*resized.width + x] = sum;
+    		}
+	}
+
+	
+	// Inverse DFT on rows and directly store as unsigned char
 	for(int y = 0; y < resized.height; y++) {
-		for(int x = 0; x < resized.width; x++) {
-			// Scales values within the image max using log scaling
-			output[y*resized.width + x] = log(1 + output[y*resized.width + x]);
-			rData[y*resized.width + x] = (unsigned char) (output[y*resized.width + x] / log(1 + max) * resized.max);
+    		for(int x = 0; x < resized.width; x++) {
+        	Complex sum = {0.0, 0.0};
+        		for(int u = 0; u < resized.width; u++) {
+            			double exponent = 2.0 * PI * u * x / resized.width; // note + sign
+            			Complex i = {0, 1};
+            			Complex e = c_exp(c_mul(i, c_rep(exponent)));
+            			sum = c_add(sum, c_mul(invTemp[y*resized.width + u], e));
+        		}
+
+        		// Normalize and undo centering
+        		double val = sum.real / (resized.width * resized.height);
+        		val *= pow(-1, x + y);
+
+        		// Clamp and convert to unsigned char
+        		if(val < 0) val = 0;
+        		if(val > resized.max) val = resized.max;
+        		rData[y*resized.width + x] = (unsigned char) val;
+    		}
+	}
+
+	// Move the modified data back into the resized image's data
+	resized.data = rData;
+
+
+	// "Crop" the image back to the original dimensions, rewriting the original buffer with the transformed data
+	for (int y = 0; y < img.height; y++) {
+        	for (int x = 0; x < img.width; x++) {
+        		img.data[y*img.width + x] = resized.data[y*resized.width + x];
 		}
-	}	
+    	}
 
 	// Write to the output
-	writePGM("output.pgm", &resized);	
+	writePGM("output.pgm", &img);	
 
 	// Free memory and close resources
 	free(rData);
 	free(temp);
-	free(output);
+	free(invTemp);
+	free(dft2);
 
 	return 0;
 }
