@@ -4,6 +4,6 @@
 | ------------ | ---------------------- | ----------------------------------- |
 | `stdio.h`    | Standard I/O library   | n/a                                 |
 | `stdlib.h`   | Standard C library     | n/a                                 |
-| `complex.h`  | Complex number library | See [[Complex Number Library Docs]] |
-| `pgm.h`      | PGM File libary        | See [[PGM IO Library Docs]]         |
+| `complex.h`  | Complex number library | See __Complex Number Library Docs__ |
+| `pgm.h`      | PGM File libary        | See __PGM IO Library Docs__         |
 |              |                        |                                     |
