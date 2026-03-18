@@ -16,6 +16,7 @@ Complex c_exp(Complex z1);
 Complex c_rep(double x);
 double c_real(Complex z);
 double c_imag(Complex z);
+double c_mag(Complex z);
 void c_print(Complex z1);
 
 #endif

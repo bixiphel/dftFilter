@@ -38,6 +38,10 @@ double c_imag(Complex z) {
 	return z.imag;
 }
 
+double c_mag(Complex z) {
+	return sqrt(z.real*z.real + z.imag*z.imag);
+}
+
 void c_print(Complex z1) {
 	if(z1.imag > 0) {
 		printf("%f + %fi", z1.real, z1.imag);
