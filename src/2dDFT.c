@@ -15,6 +15,7 @@ int main(int argc, char** argv) {
 
 	PGMimage img;
 	const double PI = acos(-1.0f);
+	const Complex i = {0, 1};
 
 	readPGM(argv[1], &img);
 
@@ -26,8 +27,8 @@ int main(int argc, char** argv) {
 	unsigned char *rData = malloc(resized.width * resized.height);
 
 	// Zero the rData array
-	for(int i = 0; i < resized.width*resized.height; i++) {
-		rData[i] = 0;
+	for(int q = 0; q < resized.width*resized.height; q++) {
+		rData[q] = 0;
 	}
 
 	// Put the original image data in the top-left corner and "center" it
@@ -47,11 +48,7 @@ int main(int argc, char** argv) {
 			Complex num = {0.0f, 0.0f};
 
 			for(int x = 0; x < resized.width; x++) {
-				double exponent = -2.0f*PI*u*x/(resized.width);
-				Complex i = {0, 1};
-				Complex power = c_mul(i, c_rep(exponent));
-				Complex e = c_exp(power);
-				Complex transform = c_mul(e, c_rep((double)resized.data[y*resized.width + x]));
+				Complex transform = c_mul(c_exp(c_mul(i, c_rep(-2.0f*PI*u*x/(resized.width)))), c_rep((double)resized.data[y*resized.width + x]));
 				num = c_add(num, transform);
 			}
 
@@ -68,12 +65,7 @@ int main(int argc, char** argv) {
 			Complex num = {0.0f, 0.0f};
 
 			for(int y = 0; y < resized.height; y++) {
-				double exponent = -2.0f*PI*v*y/(resized.height);
-				Complex i = {0, 1};
-				Complex power = c_mul(i, c_rep(exponent));
-				Complex e = c_exp(power);
-				
-				num = c_add(num, c_mul(temp[y*resized.width + x], e));
+				num = c_add(num, c_mul(temp[y*resized.width + x], c_exp(c_mul(i, c_rep(-2.0f*PI*v*y/(resized.height))))));
 			}
 			dft2[v*resized.width + x] = num;
 		}
@@ -106,10 +98,7 @@ int main(int argc, char** argv) {
     		for(int y = 0; y < resized.height; y++) {
         		Complex sum = {0.0, 0.0};
         		for(int v = 0; v < resized.height; v++) {
-            			double exponent = 2.0 * PI * v * y / resized.height; 
-            			Complex i = {0, 1};
-            			Complex e = c_exp(c_mul(i, c_rep(exponent)));
-            			sum = c_add(sum, c_mul(dft2[v*resized.width + x], e));
+            			sum = c_add(sum, c_mul(dft2[v*resized.width + x], c_exp(c_mul(i, c_rep(2.0*PI*v*y/resized.height)))));
         		}
         		invTemp[y*resized.width + x] = sum;
     		}
@@ -121,10 +110,7 @@ int main(int argc, char** argv) {
     		for(int x = 0; x < resized.width; x++) {
         	Complex sum = {0.0, 0.0};
         		for(int u = 0; u < resized.width; u++) {
-            			double exponent = 2.0 * PI * u * x / resized.width; // note + sign
-            			Complex i = {0, 1};
-            			Complex e = c_exp(c_mul(i, c_rep(exponent)));
-            			sum = c_add(sum, c_mul(invTemp[y*resized.width + u], e));
+            			sum = c_add(sum, c_mul(invTemp[y*resized.width + u], c_exp(c_mul(i, c_rep(2.0*PI*u*x/resized.width)))));
         		}
 
         		// Normalize and undo centering
