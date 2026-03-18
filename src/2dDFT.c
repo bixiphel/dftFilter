@@ -71,6 +71,25 @@ int main() {
 		}
 	}
 
+	/***** Ideal Low Pass Filtering *****/
+	double cutoff = 100.0f;		// Make this a user-defined parameter later
+	for(int v = 0; v < resized.height; v++) {
+		for(int u = 0; u < resized.width; u++) {
+			// Calculate the ideal function
+			double D = sqrt(pow(u - resized.width/2, 2) + pow(v - resized.height/2, 2));
+
+			if(D <= cutoff) {
+				// Multiply dft2[v*resized.width + x] by 1, which doesn't do anything
+			} else {
+				// Cuts off any frequencies that are higher than the cutoff
+				dft2[v*resized.width + u] = c_rep(0.0f);
+			}
+		}
+	}
+
+
+	/***** Inverse Transform *****/
+
 	// Pointer similar to temp for the inverse transform's values
 	Complex *invTemp = malloc(sizeof(Complex)*resized.width*resized.height);
 
