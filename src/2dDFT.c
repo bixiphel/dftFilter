@@ -25,7 +25,7 @@ int main() {
 	// Put the original image data in the top-left corner and "center" it
 	for (int y = 0; y < img.height; y++) {
         	for (int x = 0; x < img.width; x++) {
-            		rData[y * resized.width + x] = img.data[y * img.width + x] * pow(-1, x + y);
+            		rData[y * resized.width + x] = (unsigned char)(img.data[y * img.width + x] * pow(-1, x + y));
         	}
     	}
 	resized.data = rData;
