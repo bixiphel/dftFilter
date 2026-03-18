@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
 #include "complex.h"
 #include "pgm.h"
 
@@ -9,6 +10,20 @@ int main() {
 
 	readPGM("Knee.pgm", &img);
 
+	// Resize image
+	PGMimage resized;
+	resized.width = 2*img.width - 1;
+	resized.height = 2*img.height - 1;
+	resized.max = img.max;
+	unsigned char *rData = malloc(resized.width * resized.height);
+	
+	for (int y = 0; y < img.height; y++) {
+        	for (int x = 0; x < img.width; x++) {
+            		rData[y * resized.width + x] = img.data[y * img.width + x];
+        	}
+    	}
+	resized.data = rData;
+	
 	Complex temp[img.height][img.width];
 
 	// Perform the DFT on all rows 
@@ -30,8 +45,9 @@ int main() {
 	}
 
 	// Perform the DFT on all columns
-	Complex output[img.height][img.width];
-	
+	double output[img.height][img.width];
+	double max = 0.0f;
+
 	for(int x = 0; x < img.width; x++) {
 		for(int v = 0; v < img.height; v++) {
 			Complex num = {0.0f, 0.0f};
@@ -44,12 +60,23 @@ int main() {
 				
 				num = c_add(num, c_mul(temp[y][x], e));
 			}
-			output[v][x] = num;
-			printf("%d %d | ", x, v);
-			c_print(num);
-			printf("\n");
+			output[v][x] = c_mag(num);
+			if(output[v][x] >= max) {
+				max = output[v][x];
+			}
 		}
 	}
+
+	// Converts the resulting 2D DFT back into unsigned chars 
+	for(int y = 0; y < img.height; y++) {
+		for(int x = 0; x < img.width; x++) {
+			// Scales values within the image max using log scaling
+			output[y][x] = log(1 + output[y][x]);
+			rData[y*img.width + x] = (unsigned char) (output[y][x] / log(1 + max) * img.max);
+		}
+	}	
+
+	writePGM("output.pgm", &resized);	
 
 	return 0;
 }
