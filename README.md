@@ -14,6 +14,9 @@ This project implements a **2D Discrete Fourier Transform (DFT)** and its invers
 - Time complexity is on the order of $O(n^3)$, hence long execution time
 - Only non-built in libraries that are used are `stdlib.h`, `stdio.h`, and `math.h` for utility and trignometric functions
 
+| Original Image | Cutoff Frequency = 10 | Cutoff Frequency = 200 | 
+| ----- | <img src="https://github.com/bixiphel/dftFilter/blob/742f0a6f55ce9ead7dfa666c62ca4f321dcbc971/examples/output10.png" /> | <img src="https://github.com/bixiphel/dftFilter/blob/742f0a6f55ce9ead7dfa666c62ca4f321dcbc971/examples/output200.png" /> |
+
 ## Usage
 1. Place a `.pgm` image in the project directory (e.g., `Knee.pgm`)
 2. Compile (using GCC):
