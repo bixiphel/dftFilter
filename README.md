@@ -24,7 +24,7 @@ This project implements a **2D Discrete Fourier Transform (DFT)** and its invers
 1. Place a `.pgm` image in the project directory (e.g., `Knee.pgm`)
 2. Compile (using GCC):
    ```bash
-   gcc 2ddft.c complex.c pgm.c -lm -o dft
+   gcc 2dDft.c complex.c pgm.c -lm -o dft
    ```
 3. Execute (using Bash):
    ```bash
